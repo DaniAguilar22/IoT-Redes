@@ -1,5 +1,17 @@
 <div class="dashboard">
-    <h1>Monitoreo de Inundaciones</h1>
-    <button (click)="sendAlerts()">Enviar Alertas</button>
-  </div>
-  
+  <h1>Monitoreo de Inundaciones</h1>
+  <table>
+    <tr>
+      <th>Tiempo</th>
+      <th>Nivel de Agua (cm)</th>
+      <th>Estado</th>
+    </tr>
+    <tr *ngFor="let data of waterLevels">
+      <td>{{ data.time }}</td>
+      <td>{{ data.level }}</td>
+      <td [ngClass]="{ 'critical': data.isCritical }">
+        {{ data.isCritical ? 'Crítico' : 'Normal' }}
+      </td>
+    </tr>
+  </table>
+</div>

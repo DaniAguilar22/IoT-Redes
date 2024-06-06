@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors'); 
 const axios = require('axios');
 const sgMail = require('@sendgrid/mail');
 const twilio = require('twilio');
@@ -28,6 +29,7 @@ parser.on('data', (data) => {
 */
 
 // Middleware para analizar el cuerpo de las solicitudes como JSON
+app.use(cors()); 
 app.use(express.json());
 
 let latestSensorData = null;

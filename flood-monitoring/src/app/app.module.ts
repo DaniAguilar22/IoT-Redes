@@ -6,17 +6,19 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AlertsComponent } from './alerts/alerts.component';
 import { routes } from './app.routes';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
+    CommonModule
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     AppComponent,
-    DashboardComponent,
     AlertsComponent,
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes),
+    DashboardComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

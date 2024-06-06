@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError } from 'rxjs';
+import { Observable, catchError, interval } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -10,12 +11,15 @@ export class DataService {
 
   constructor(private http: HttpClient) { }
 
-  sendAlerts(data: string){
-    return this.http.post(`${this.apiUrl}/send-alerts`, { sensorData: data })
-    .pipe(
-      catchError(error => {
-        console.error('Error sending alerts:', error);
-        throw error;
+  sendAlerts(data: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/send-alerts`, { data });
+  }
+
+  getWaterLevel(): Observable<{ level: number, isCritical: boolean }> {
+    return interval(2000).pipe(  // Emitir valores cada 2 segundos
+      map(() => {
+        const level = Math.floor(Math.random() * 150);  // Generar nivel de agua aleatorio entre 0 y 150
+        return { level, isCritical: level > 100 };
       })
     );
   }
