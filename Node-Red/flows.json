@@ -1,0 +1,162 @@
+[
+    {
+        "id": "d949b6e1e72db813",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "0134398ac4b424b4",
+        "type": "debug",
+        "z": "d949b6e1e72db813",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "6536d03dc250f373",
+        "type": "inject",
+        "z": "d949b6e1e72db813",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 300,
+        "y": 260,
+        "wires": [
+            [
+                "8ecd129bdf72cd69"
+            ]
+        ]
+    },
+    {
+        "id": "8ecd129bdf72cd69",
+        "type": "function",
+        "z": "d949b6e1e72db813",
+        "name": "get water level data",
+        "func": "var waterLevel = Math.floor(Math.random() * 151);\nvar state = waterLevel > 100 ? 'crítico' : 'normal';\nvar timestamp = new Date().toLocaleTimeString();\nvar datos = {\n    timestamp: timestamp,\n    level: waterLevel,\n    state: state\n};\nmsg.payload = datos\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 380,
+        "wires": [
+            [
+                "0134398ac4b424b4",
+                "bed9e9541a164de0",
+                "7be3202606c4536c"
+            ]
+        ]
+    },
+    {
+        "id": "7be3202606c4536c",
+        "type": "ui_text",
+        "z": "d949b6e1e72db813",
+        "group": "46577e622f774cf8",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "water level",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 670,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "bed9e9541a164de0",
+        "type": "http request",
+        "z": "d949b6e1e72db813",
+        "name": "Post data to firebase",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://redesiot-5d82d-default-rtdb.firebaseio.com/.json",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Content-Type",
+                "keyValue": "",
+                "valueType": "application/json",
+                "valueValue": ""
+            }
+        ],
+        "x": 700,
+        "y": 300,
+        "wires": [
+            [
+                "d0a0814ad122bae7"
+            ]
+        ]
+    },
+    {
+        "id": "d0a0814ad122bae7",
+        "type": "debug",
+        "z": "d949b6e1e72db813",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 860,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "46577e622f774cf8",
+        "type": "ui_group",
+        "name": "newgroup",
+        "tab": "ad9f3a621dd89d3c",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ad9f3a621dd89d3c",
+        "type": "ui_tab",
+        "name": "Info",
+        "icon": "info",
+        "disabled": false,
+        "hidden": false
+    }
+]
