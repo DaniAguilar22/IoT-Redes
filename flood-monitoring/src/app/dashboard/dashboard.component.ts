@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
-import { HttpClient } from '@angular/common/http';
 import { NgFor, NgIf, NgClass } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -10,30 +10,43 @@ import { NgFor, NgIf, NgClass } from '@angular/common';
   imports: [NgFor, NgIf, NgClass],
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
   waterLevels: { time: string, level: number, isCritical: boolean }[] = [];
+  private updateSubscription!: Subscription;
 
-  constructor(private dataService: DataService, private http: HttpClient) { }
+  constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.getWaterLevel().subscribe(data => {
-      const currentTime = new Date().toLocaleTimeString();
-      this.waterLevels.push({ ...data, time: currentTime });
+    this.updateSubscription = this.dataService.getPeriodicUpdates(1000) 
+      .subscribe(records => {
+        const newRecords = records.filter(record => 
+          !this.waterLevels.some(existingRecord => existingRecord.time === record.timestamp)
+        );
+        
+        newRecords.forEach(record => {
+          this.waterLevels.push({ ...record, time: record.timestamp, isCritical: record.state === 'crítico' });
 
-      // Enviar alerta si el nivel es crítico
-      if (data.isCritical) {
-        this.dataService.sendAlerts(` ${data.level} cm`).subscribe(response => {
-          console.log('Alert sent:', response);
-        }, error => {
-          console.error('Error sending alert:', error);
+          if (record.state === 'crítico'){
+            this.dataService.sendAlerts(` ${record.level} cm`).subscribe(response => {
+              console.log('Alert sent:', response);
+            }, error => {
+              console.error('Error sending alert:', error);
+            });
+          }
         });
-      }
 
-      if (this.waterLevels.length > 100) {
-        this.waterLevels.shift(); // Mantener solo los últimos 10 registros
-      }
-    });
+        // Limitar la cantidad de registros a los últimos 100
+        if (this.waterLevels.length > 100) {
+          this.waterLevels.splice(0, this.waterLevels.length - 100);
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.updateSubscription) {
+      this.updateSubscription.unsubscribe();
+    }
   }
 
   sendAlerts(): void {
